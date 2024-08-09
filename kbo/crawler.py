@@ -33,12 +33,12 @@ class KBODataCrawler:
             'G_ID',  # game id
             'G_TM',  # game start time
             'S_NM',  # stadium name
-            'HOME_NM',  # home team name
             'AWAY_NM',  # away team name
-            'T_PIT_P_NM',  #
-            'B_PIT_P_NM',
-            'CANCEL_SC_NM',
-            'GAME_SC_NM'
+            'HOME_NM',  # home team name
+            'T_PIT_P_NM',  # away team starting pitcher
+            'B_PIT_P_NM',  # home team starting pitcher
+            'CANCEL_SC_NM',  # 경기 취소 사유
+            'GAME_SC_NM'  # 시즌 이름
         ]
         df_game = pd.DataFrame(game_list, columns=columns)
         for column in columns:
