@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KBO diary</title>
+    <style>
+        .team-select {
+            display: flex;
+            justify-content: space-between; /* Adjust spacing between buttons */
+            gap: 10px; /* Add gap between buttons if needed */
+        }
+
+        .team-select > button {
+            width: 100%; /* Make buttons take up available space */
+            height: 200px; /* Set height of buttons */
+            margin: 10px; /* Add margin around buttons if needed */
+            flex: 1; /* Ensure buttons take equal width */
+        }
+    </style>
+    <script>
+        function teamSelect(team_full_name, g_id) {
+            window.location.href = `/api/kbo/game_data/?g_id=` + g_id + `&team=` + team_full_name;
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <button id="back-button" onclick="window.history.back();">Back</button>
+    </div>
+    <div class="team-select">
+        <button onclick="teamSelect('{{ away.full_name }}', '{{ g_id }}');">
+            {{ away.full_name }}
+        </button>
+        <button onclick="teamSelect('{{ home.full_name }}', '{{ g_id }}');">
+            {{ home.full_name }}
+        </button>
+    </div>
+
+</body>
+</html>

@@ -78,6 +78,7 @@ class KBODataCrawler:
             )
         )
 
+
     def make_game_summary_data(self, raw_data):
         res = dict(
             home=dict(
