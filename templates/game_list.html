@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KBO diary</title>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        tr:hover {
+            background: antiquewhite;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        function goToGameDetails(g_id) {
+            // Redirect to the new API endpoint with g_id as a query parameter
+            window.location.href = `/api/kbo/game_data/?g_id=` + g_id;
+        }
+    </script>
+</head>
+<body>
+<h1>{{ date }} Game List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Game ID</th>
+                <th>경기 시간</th>
+                <th>경기장</th>
+                <th>원정팀</th>
+                <th>홈팀</th>
+                <th>원정팀 선발 투수</th>
+                <th>홈팀 선발 투수</th>
+                <th>경기 정보</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr onclick="goToGameDetails('{{ game.G_ID }}')">
+                <td>{{ game.G_ID }}</td>
+                <td>{{ game.G_TM }}</td>
+                <td>{{ game.S_NM }}</td>
+                <td>{{ game.AWAY_NM }}</td>
+                <td>{{ game.HOME_NM }}</td>
+                <td>{{ game.T_PIT_P_NM }}</td>
+                <td>{{ game.B_PIT_P_NM }}</td>
+                <td>{{ game.CANCEL_SC_NM }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            width: 100px;
+            height: 50px;
+        }
+
+    </style>
+    <script>
+        function awayButtonClick() {
+            document.getElementById('away-data').style.display = 'block';
+            document.getElementById('home-data').style.display = 'none';
+
+            document.getElementById('away-data-button').style.background = 'skyblue';
+            document.getElementById('home-data-button').style.background = 'white';
+        }
+
+        function homeButtonClick() {
+            document.getElementById('home-data').style.display = 'block';
+            document.getElementById('away-data').style.display = 'none';
+
+            document.getElementById('home-data-button').style.background = 'skyblue';
+            document.getElementById('away-data-button').style.background = 'white';
+        }
+
+        // Optionally, show away data by default
+        document.getElementById('away-data').style.display = 'block';
+        document.getElementById('home-data').style.display = 'none';
+        document.getElementById('away-data-button').style.background = 'skyblue';
+        document.getElementById('home-data-button').style.background = 'white';
+    </script>
+</head>
+<body>
+    <h1>{{ away.summary.full_name }} ({{ away.score.result }}) vs {{ home.summary.full_name }} ({{ home.score.result }})</h1>
+    <h3> </h3>
+
+    <h2>Score and Stats by Inning</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                {% for inning in home.score.scores %}
+                <th>{{ forloop.counter }}회</th>
+                {% endfor %}
+                <th>R</th>
+                <th>H</th>
+                <th>E</th>
+                <th>B</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ away.summary.name }}</td>
+                {% for score in away.score.scores %}
+                <td>{{ score }}</td>
+                {% endfor %}
+                <td>{{ away.score.stats.R }}</td>
+                <td>{{ away.score.stats.H }}</td>
+                <td>{{ away.score.stats.E }}</td>
+                <td>{{ away.score.stats.B }}</td>
+            </tr>
+            <tr>
+                <td>{{ home.summary.name }}</td>
+                {% for score in home.score.scores %}
+                <td>{{ score }}</td>
+                {% endfor %}
+                <td>{{ home.score.stats.R }}</td>
+                <td>{{ home.score.stats.H }}</td>
+                <td>{{ home.score.stats.E }}</td>
+                <td>{{ home.score.stats.B }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <button id="away-data-button" onclick="awayButtonClick()">{{ away.summary.name }}</button>
+        <button id="home-data-button" onclick="homeButtonClick()">{{ home.summary.name }}</button>
+    </div>
+    <div id="away-data">
+        <h2>Hitters</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>PA</th>
+                    <th>H</th>
+                    <th>RBI</th>
+                    <th>R</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hitter in away.hitter %}
+                <tr>
+                    <td>{{ hitter.number }}</td>
+                    <td>{{ hitter.position }}</td>
+                    <td>{{ hitter.name }}</td>
+                    <td>{{ hitter.PA }}</td>
+                    <td>{{ hitter.H }}</td>
+                    <td>{{ hitter.RBI }}</td>
+                    <td>{{ hitter.R }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2>Pitchers</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>IP</th>
+                    <th>NP</th>
+                    <th>H</th>
+                    <th>HR</th>
+                    <th>BB</th>
+                    <th>SO</th>
+                    <th>R</th>
+                    <th>ER</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pitcher in away.pitcher %}
+                <tr>
+                    <td>{{ pitcher.name }}</td>
+                    <td>{{ pitcher.IP }}</td>
+                    <td>{{ pitcher.NP }}</td>
+                    <td>{{ pitcher.H }}</td>
+                    <td>{{ pitcher.HR }}</td>
+                    <td>{{ pitcher.BB }}</td>
+                    <td>{{ pitcher.SO }}</td>
+                    <td>{{ pitcher.R }}</td>
+                    <td>{{ pitcher.ER }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="home-data">
+        <h2>Hitters</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>PA</th>
+                    <th>H</th>
+                    <th>RBI</th>
+                    <th>R</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hitter in home.hitter %}
+                <tr>
+                    <td>{{ hitter.number }}</td>
+                    <td>{{ hitter.position }}</td>
+                    <td>{{ hitter.name }}</td>
+                    <td>{{ hitter.PA }}</td>
+                    <td>{{ hitter.H }}</td>
+                    <td>{{ hitter.RBI }}</td>
+                    <td>{{ hitter.R }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Pitchers</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>IP</th>
+                    <th>NP</th>
+                    <th>H</th>
+                    <th>HR</th>
+                    <th>BB</th>
+                    <th>SO</th>
+                    <th>R</th>
+                    <th>ER</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pitcher in home.pitcher %}
+                <tr>
+                    <td>{{ pitcher.name }}</td>
+                    <td>{{ pitcher.IP }}</td>
+                    <td>{{ pitcher.NP }}</td>
+                    <td>{{ pitcher.H }}</td>
+                    <td>{{ pitcher.HR }}</td>
+                    <td>{{ pitcher.BB }}</td>
+                    <td>{{ pitcher.SO }}</td>
+                    <td>{{ pitcher.R }}</td>
+                    <td>{{ pitcher.ER }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>

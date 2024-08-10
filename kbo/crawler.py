@@ -7,7 +7,7 @@ import requests
 
 class KBODataCrawler:
     AWAY_IDX = 0
-    HOME_IDX = 0
+    HOME_IDX = 1
 
     GAME_LIST_URL = 'https://www.koreabaseball.com/ws/Main.asmx/GetKboGameList'
     SCORE_BOARD_URL = 'https://www.koreabaseball.com/ws/Schedule.asmx/GetScoreBoardScroll'
