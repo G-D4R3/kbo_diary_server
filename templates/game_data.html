@@ -3,78 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KBO diary</title>
+    <title>KBO Diary</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 20px;
+            background-color: #f4f7f9;
+            color: #333;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            font-size: 24px;
+            color: #007bff;
         }
+
         h2 {
             margin-top: 30px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #333;
         }
+
+        h3 {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #007bff;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        button {
-            width: 100px;
-            height: 50px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        table, th, td {
+            border: 1px solid #dee2e6;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        button {
+            width: 120px;
+            height: 40px;
+            margin: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #away-data-button, #home-data-button {
+            margin: 20px;
+        }
+
+        textarea {
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            resize: none;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            table, th, td {
+                font-size: 14px;
+            }
+
+            h1, h2 {
+                font-size: 20px;
+            }
+
+            button {
+                width: 100px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            textarea {
+                font-size: 14px;
+            }
+        }
     </style>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 초기 상태 설정
+            document.getElementById('away-data').style.display = 'block';
+            document.getElementById('home-data').style.display = 'none';
+            document.getElementById('away-data-button').style.background = '#007bff';
+            document.getElementById('home-data-button').style.background = '#cccccc';
+
+            const teamRes = '{{ record.result }}';
+            const teamResultElement = document.getElementById('team_result');
+
+            if (teamRes === 'W') {
+                teamResultElement.textContent = '응원한 팀이 승리했어요';
+            } else if (teamRes === 'D') {
+                teamResultElement.textContent = '오늘은 무승부!';
+            } else if (teamRes === 'L') {
+                teamResultElement.textContent = '응원한 팀이 패배했어요';
+            }
+        });
+
         function awayButtonClick() {
             document.getElementById('away-data').style.display = 'block';
             document.getElementById('home-data').style.display = 'none';
-
-            document.getElementById('away-data-button').style.background = 'skyblue';
-            document.getElementById('home-data-button').style.background = 'white';
+            document.getElementById('away-data-button').style.background = '#007bff';
+            document.getElementById('home-data-button').style.background = '#cccccc';
         }
 
         function homeButtonClick() {
             document.getElementById('home-data').style.display = 'block';
             document.getElementById('away-data').style.display = 'none';
-
-            document.getElementById('home-data-button').style.background = 'skyblue';
-            document.getElementById('away-data-button').style.background = 'white';
+            document.getElementById('home-data-button').style.background = '#007bff';
+            document.getElementById('away-data-button').style.background = '#cccccc';
         }
 
-        // Optionally, show away data by default
-        document.getElementById('away-data').style.display = 'block';
-        document.getElementById('home-data').style.display = 'none';
-        document.getElementById('away-data-button').style.background = 'skyblue';
-        document.getElementById('home-data-button').style.background = 'white';
+        function recordMemo() {
+            const record_id = '{{ record.id }}';
+            window.location.href = `/api/records/memo/?id=` + record_id;
+        }
+
+        function goBack() {
+            const g_id = '{{ record.g_id }}';
+            window.location.href = `/api/records/team_select/?g_id=` + g_id;
+        }
     </script>
 </head>
 <body>
     <div>
-        <button id="back-button" onclick="window.history.back();">Back</button>
+        <button id="back-button" onclick="goBack();">Back</button>
     </div>
-    <h1>{{ away.summary.full_name }} ({{ away.score.result }}) vs {{ home.summary.full_name }} ({{ home.score.result }})</h1>
-    <h3> </h3>
+    <h1>{{ game.away.summary.full_name }} ({{ game.away.score.result }}) vs {{ game.home.summary.full_name }} ({{ game.home.score.result }})</h1>
+    <h3 id="team_result"> </h3>
 
     <h2>Score and Stats by Inning</h2>
     <table>
         <thead>
             <tr>
                 <th>Team</th>
-                {% for inning in home.score.scores %}
+                {% for inning in game.home.score.scores %}
                 <th>{{ forloop.counter }}회</th>
                 {% endfor %}
                 <th>R</th>
@@ -85,32 +176,38 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ away.summary.name }}</td>
-                {% for score in away.score.scores %}
+                <td>{{ game.away.summary.name }}</td>
+                {% for score in game.away.score.scores %}
                 <td>{{ score }}</td>
                 {% endfor %}
-                <td>{{ away.score.stats.R }}</td>
-                <td>{{ away.score.stats.H }}</td>
-                <td>{{ away.score.stats.E }}</td>
-                <td>{{ away.score.stats.B }}</td>
+                <td>{{ game.away.score.stats.R }}</td>
+                <td>{{ game.away.score.stats.H }}</td>
+                <td>{{ game.away.score.stats.E }}</td>
+                <td>{{ game.away.score.stats.B }}</td>
             </tr>
             <tr>
-                <td>{{ home.summary.name }}</td>
-                {% for score in home.score.scores %}
+                <td>{{ game.home.summary.name }}</td>
+                {% for score in game.home.score.scores %}
                 <td>{{ score }}</td>
                 {% endfor %}
-                <td>{{ home.score.stats.R }}</td>
-                <td>{{ home.score.stats.H }}</td>
-                <td>{{ home.score.stats.E }}</td>
-                <td>{{ home.score.stats.B }}</td>
+                <td>{{ game.home.score.stats.R }}</td>
+                <td>{{ game.home.score.stats.H }}</td>
+                <td>{{ game.home.score.stats.E }}</td>
+                <td>{{ game.home.score.stats.B }}</td>
             </tr>
         </tbody>
     </table>
 
     <div>
-        <button id="away-data-button" onclick="awayButtonClick()">{{ away.summary.name }}</button>
-        <button id="home-data-button" onclick="homeButtonClick()">{{ home.summary.name }}</button>
+        <h2>Note</h2>
+        <textarea id="text-box" readonly onclick="recordMemo()">{{ record.memo }}</textarea>
     </div>
+
+    <div>
+        <button id="away-data-button" onclick="awayButtonClick()">{{ game.away.summary.name }}</button>
+        <button id="home-data-button" onclick="homeButtonClick()">{{ game.home.summary.name }}</button>
+    </div>
+
     <div id="away-data">
         <h2>Hitters</h2>
         <table>
@@ -126,7 +223,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for hitter in away.hitter %}
+                {% for hitter in game.away.hitter %}
                 <tr>
                     <td>{{ hitter.number }}</td>
                     <td>{{ hitter.position }}</td>
@@ -155,7 +252,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for pitcher in away.pitcher %}
+                {% for pitcher in game.away.pitcher %}
                 <tr>
                     <td>{{ pitcher.name }}</td>
                     <td>{{ pitcher.IP }}</td>
@@ -171,6 +268,7 @@
             </tbody>
         </table>
     </div>
+
     <div id="home-data">
         <h2>Hitters</h2>
         <table>
@@ -186,7 +284,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for hitter in home.hitter %}
+                {% for hitter in game.home.hitter %}
                 <tr>
                     <td>{{ hitter.number }}</td>
                     <td>{{ hitter.position }}</td>
@@ -216,7 +314,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for pitcher in home.pitcher %}
+                {% for pitcher in game.home.pitcher %}
                 <tr>
                     <td>{{ pitcher.name }}</td>
                     <td>{{ pitcher.IP }}</td>
@@ -231,7 +329,6 @@
                 {% endfor %}
             </tbody>
         </table>
-
     </div>
 
 </body>

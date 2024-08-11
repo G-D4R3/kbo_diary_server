@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBO Diary</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e9ecef;
+            margin: 0;
+        }
+        .calendar {
+            width: 350px;
+            border: 1px solid #ddd;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .calendar-header {
+            background-color: #007bff;
+            color: #ffffff;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .calendar-header button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .prev-month {
+            left: 10px;
+        }
+        .next-month {
+            right: 10px;
+        }
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            padding: 10px;
+        }
+        .calendar-body div {
+            text-align: center;
+            padding: 15px 0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .calendar-body .day {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            cursor: default;
+        }
+        .calendar-body .sunday {
+            color: #dc3545;
+        }
+        .calendar-body .today {
+            background-color: #007bff;
+            color: #ffffff;
+            border-radius: 50%;
+        }
+        .calendar-body .muted {
+            color: #ced4da;
+            pointer-events: none;
+        }
+        .calendar-body div:hover:not(.muted) {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calendar">
+    <div class="calendar-header" id="calendar-header">
+        <button class="prev-month" onclick="changeMonth(-1)">&#8249;</button>
+        <span id="month-year"></span>
+        <button class="next-month" onclick="changeMonth(1)">&#8250;</button>
+    </div>
+    <div class="calendar-body" id="calendar-body">
+        <!-- 날짜가 JavaScript에 의해 여기에 표시됩니다 -->
+    </div>
+</div>
+
+<script>
+    let currentDate = new Date();
+
+    function generateCalendar(year, month) {
+        const header = document.getElementById('month-year');
+        const body = document.getElementById('calendar-body');
+        body.innerHTML = ''; // 기존 내용 제거
+
+        const today = new Date();
+        const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+
+        header.textContent = `${monthNames[month - 1]} ${year}`;
+
+        const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+
+        // 요일 표시
+        daysOfWeek.forEach(day => {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('day');
+            if (day === '일') {
+                dayElement.classList.add('sunday');
+            }
+            dayElement.textContent = day;
+            body.appendChild(dayElement);
+        });
+
+        const firstDayIndex = new Date(year, month - 1, 1).getDay();
+        const lastDay = new Date(year, month, 0).getDate();
+
+        // 첫 주 공백 채우기
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyElement = document.createElement('div');
+            body.appendChild(emptyElement);
+        }
+
+        // 날짜 채우기
+        for (let day = 1; day <= lastDay; day++) {
+            const dateElement = document.createElement('div');
+            dateElement.textContent = day;
+
+            // 현재 날짜 객체 생성
+            const dateToCheck = new Date(year, month - 1, day);
+
+            // 일요일 색상 적용
+            const currentDayIndex = dateToCheck.getDay();
+            if (currentDayIndex === 0) {
+                dateElement.classList.add('sunday');
+            }
+
+            // 오늘 날짜 강조
+            if (year === today.getFullYear() && month === today.getMonth() + 1 && day === today.getDate()) {
+                dateElement.classList.add('today');
+            }
+
+            // 미래 날짜 처리
+            if (dateToCheck > today) {
+                dateElement.classList.add('muted');
+            } else {
+                // 날짜 클릭 이벤트 추가 (미래 날짜는 제외)
+                dateElement.addEventListener('click', () => {
+                    const formattedDate = `${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+                    window.location.href = `http://localhost:8000/api/kbo/games/?date=${formattedDate}`;
+                });
+            }
+
+            body.appendChild(dateElement);
+        }
+    }
+
+    function changeMonth(offset) {
+        currentDate.setMonth(currentDate.getMonth() + offset);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+    }
+
+    // 초기 캘린더 생성
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+</script>
+
+</body>
+</html>

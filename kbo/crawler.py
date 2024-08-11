@@ -13,6 +13,30 @@ class KBODataCrawler:
     SCORE_BOARD_URL = 'https://www.koreabaseball.com/ws/Schedule.asmx/GetScoreBoardScroll'
     BOX_SCORE_URL = 'https://www.koreabaseball.com/ws/Schedule.asmx/GetBoxScoreScroll'
 
+    @classmethod
+    def get_score_board_raw_data(cls, g_id):
+        s_id = g_id[0:4]
+        post_data = dict(
+            seasonId=s_id,
+            gameId=g_id,
+            leId=1,
+            srId=0
+        )
+        raw_data = requests.post(cls.SCORE_BOARD_URL, post_data).json()
+        return raw_data
+
+    @classmethod
+    def get_player_raw_data(cls, g_id):
+        s_id = g_id[0:4]
+        post_data = dict(
+            seasonId=s_id,
+            gameId=g_id,
+            leId=1,
+            srId=0
+        )
+        raw_data = requests.post(cls.BOX_SCORE_URL, post_data).json()
+        return raw_data
+
     def get_game_list(self, date: str):
         leId = 1
         srId = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -48,15 +72,8 @@ class KBODataCrawler:
         return data
 
     def get_game_data(self, s_id: str, g_id: str):
-        post_data = dict(
-            seasonId=s_id,
-            gameId=g_id,
-            leId=1,
-            srId=0
-        )
-
-        score_board_raw_data = requests.post(self.SCORE_BOARD_URL, post_data).json()
-        player_raw_data = requests.post(self.BOX_SCORE_URL, post_data).json()
+        score_board_raw_data = self.get_score_board_raw_data(g_id)
+        player_raw_data = self.get_player_raw_data(g_id)
 
         game_summary = self.make_game_summary_data(score_board_raw_data)
         score_data = self.get_score_data(score_board_raw_data)

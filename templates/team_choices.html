@@ -2,39 +2,140 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KBO diary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBO Diary</title>
     <style>
-        .team-select {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: space-between; /* Adjust spacing between buttons */
-            gap: 10px; /* Add gap between buttons if needed */
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f7f9;
         }
 
-        .team-select > button {
-            width: 100%; /* Make buttons take up available space */
-            height: 200px; /* Set height of buttons */
-            margin: 10px; /* Add margin around buttons if needed */
-            flex: 1; /* Ensure buttons take equal width */
+        header {
+            width: 100%;
+            background-color: #ffffff;
+            color: #333;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #007bff;
+            transition: color 0.3s ease;
+            margin-right: 20px;
+        }
+
+        .back-button:hover {
+            color: #0056b3;
+        }
+
+        .team-select {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .team-select form {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-select form:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-select button {
+            width: 100%;
+            height: 100%;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .team-select button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
         }
     </style>
     <script>
-        function teamSelect(team_full_name, g_id) {
-            window.location.href = `/api/kbo/game_data/?g_id=` + g_id + `&team=` + team_full_name;
+        function handleSubmit(fullName, gId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'http://localhost:8000/api/kbo/game_select/';
+
+            const fullNameInput = document.createElement('input');
+            fullNameInput.type = 'hidden';
+            fullNameInput.name = 'team_full_name';
+            fullNameInput.value = fullName;
+
+            const gIdInput = document.createElement('input');
+            gIdInput.type = 'hidden';
+            gIdInput.name = 'g_id';
+            gIdInput.value = gId;
+
+            form.appendChild(fullNameInput);
+            form.appendChild(gIdInput);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            return false;  // Prevent the default form submission
+        }
+
+        function goBack() {
+            window.location.href = '/api/kbo/games/?date=' + '{{ date }}';
         }
     </script>
 </head>
 <body>
-    <div>
-        <button id="back-button" onclick="window.history.back();">Back</button>
-    </div>
+    <header>
+        <button class="back-button" onclick="goBack();">&larr;</button>
+    </header>
     <div class="team-select">
-        <button onclick="teamSelect('{{ away.full_name }}', '{{ g_id }}');">
-            {{ away.full_name }}
-        </button>
-        <button onclick="teamSelect('{{ home.full_name }}', '{{ g_id }}');">
-            {{ home.full_name }}
-        </button>
+        <form method="post" action="{% url 'records:team_select' %}">
+            {% csrf_token %}
+            <input type="hidden" name="team_full_name" value="{{ away.full_name }}">
+            <input type="hidden" name="g_id" value="{{ g_id }}">
+            <button type="submit">
+                {{ away.full_name }}
+            </button>
+        </form>
+        <form method="post" action="{% url 'records:team_select' %}">
+            {% csrf_token %}
+            <input type="hidden" name="team_full_name" value="{{ home.full_name }}">
+            <input type="hidden" name="g_id" value="{{ g_id }}">
+            <button type="submit">
+                {{ home.full_name }}
+            </button>
+        </form>
     </div>
-
 </body>
 </html>

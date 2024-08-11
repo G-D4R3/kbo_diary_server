@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from kbo_diary_server import index_view
+
 urlpatterns = [
+    path('', index_view.index),
     path("admin/", admin.site.urls),
     path('api/kbo/', include('kbo.urls', 'kbo')),
     path('api/records/', include('records.urls', 'records')),
