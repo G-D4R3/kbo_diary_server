@@ -85,7 +85,6 @@ class KBODataCrawler:
 
             data.append(dict(
                 common=dict(
-                    date=date,
                     g_id=game_data['G_ID'],
                     g_tm=game_data['G_TM'],
                     s_nm=game_data['S_NM'],

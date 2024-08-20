@@ -16,7 +16,10 @@ class GameListAPIView(ListAPIView):
         crawler = KBODataCrawler()
         data = crawler.get_game_list(game_date)
         context = dict(
-            results=data
+            results=dict(
+                games=data,
+                date=game_date
+            )
         )
 
         return render(

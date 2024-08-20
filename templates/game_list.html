@@ -164,10 +164,10 @@
 <body>
 <header>
     <button id="back-button" onclick="goBack();">Back</button>
-    <div class="header-title">{{ results.common.date }} 경기</div>
+    <div class="header-title">{{ results.date }} 경기</div>
 </header>
 <div class="container">
-    {% for game in results %}
+    {% for game in results.games %}
         <div class="game-card {% if game.common.cancel_sc_nm != '정상경기' %}muted{% endif %}" onclick="goToGameDetails('{{ game.common.g_id }}', '{{ game.common.cancel_sc_nm }}');">
             <div class="game-details">
                 <div class="team-info-wrapper">
