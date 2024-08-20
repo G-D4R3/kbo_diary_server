@@ -88,17 +88,16 @@ class RecordRetrieveAPIView(RetrieveAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         game_id = record.g_id
-        season_id = game_id[0:4]
         crawler = KBODataCrawler()
         service = RecordService()
-        game_data = crawler.get_game_data(season_id, game_id)
+        game_data = crawler.get_game_data(game_id)
         record_data = service.retrieve(record_id)
         data = dict(
             record=record_data,
             game=game_data
         )
 
-        return render(request=request, template_name='game_data.html', context=data)
+        return render(request=request, template_name='record.html', context=data)
 
 
 class RecordMemoAPIView(APIView):

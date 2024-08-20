@@ -108,29 +108,54 @@ class KBODataCrawler:
             ))
         return data
 
-    def get_game_data(self, s_id: str, g_id: str):
+    def get_game_data(self, g_id: str):
         score_board_raw_data = self.get_score_board_raw_data(g_id)
         player_raw_data = self.get_player_raw_data(g_id)
 
-        game_summary = self.make_game_summary_data(score_board_raw_data)
         score_data = self.get_score_data(score_board_raw_data)
         hitter_data = self.get_hitter_data(player_raw_data)
         pitcher_data = self.get_pitcher_data(player_raw_data)
 
-        return dict(
-            home=dict(
-                summary=game_summary['home'],
-                score=score_data['home'],
-                hitter=hitter_data['home'],
-                pitcher=pitcher_data['home']
-            ),
-            away=dict(
-                summary=game_summary['away'],
-                score=score_data['away'],
-                hitter=hitter_data['away'],
-                pitcher=pitcher_data['away']
-            )
+        away_data = dict(
+            name=score_board_raw_data['AWAY_NM'],
+            full_name=score_board_raw_data['FULL_AWAY_NM'],
+            result_score=score_board_raw_data['T_SCORE_CN'],
+            result=score_data['away']['result'],
+            scores=score_data['away']['scores'],
+            stats=score_data['away']['stats'],
+            hitters=hitter_data['away'],
+            pitchers=pitcher_data['away']
         )
+
+        home_data = dict(
+            name=score_board_raw_data['HOME_NM'],
+            full_name=score_board_raw_data['FULL_HOME_NM'],
+            result_score=score_board_raw_data['B_SCORE_CN'],
+            result=score_data['home']['result'],
+            scores=score_data['home']['scores'],
+            stats=score_data['home']['stats'],
+            hitters=hitter_data['home'],
+            pitchers=pitcher_data['home']
+        )
+
+        away_team = Team.objects.get(full_name=away_data['full_name'])
+        home_team = Team.objects.get(full_name=home_data['full_name'])
+
+        away_data['logo'] = away_team.logo.url
+        home_data['logo'] = home_team.logo.url
+        away_data['initial_logo'] = away_team.initial_logo.url
+        home_data['initial_logo'] = home_team.initial_logo.url
+
+        data = dict(
+            common=dict(
+                g_id=g_id,
+                date=g_id[0:8]
+            ),
+            away=away_data,
+            home=home_data
+        )
+
+        return data
 
     def make_game_summary_data(self, raw_data):
         home_name = raw_data['HOME_NM']

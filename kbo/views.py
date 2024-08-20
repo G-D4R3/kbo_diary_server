@@ -27,19 +27,3 @@ class GameListAPIView(ListAPIView):
             template_name='game_list.html',
             context=context
         )
-
-class GameDataAPIView(RetrieveAPIView):
-    queryset = ''
-    serializer_class = None
-
-    def get(self, request, *args, **kwargs):
-        game_id = request.query_params.get('g_id')
-        if game_id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        season_id = game_id[0:4]
-
-        crawler = KBODataCrawler()
-        data = crawler.get_game_data(season_id, game_id)
-
-        return render(request=request, template_name='game_data.html', context=data)
-

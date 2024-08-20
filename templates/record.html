@@ -235,15 +235,15 @@
         <div>
             <div style="display: flex; align-items: center; justify-content: center;">
                 <div style="text-align: center;">
-                    <img src="{{ game.away.summary.logo }}" class="team-logo"/>
-                    <h1>{{ game.away.summary.score }}</h1>
-                    <p>{{ game.away.score.result }}</p>
+                    <img src="{{ game.away.logo }}" class="team-logo"/>
+                    <h1>{{ game.away.result_score }}</h1>
+                    <p>{{ game.away.result }}</p>
                 </div>
                 <h1 style="margin: 0 10px; color: #424242;">vs</h1>
                 <div style="text-align: center;">
-                    <img src="{{ game.home.summary.logo }}" class="team-logo"/>
-                    <h1>{{ game.home.summary.score }}</h1>
-                    <p>{{ game.home.score.result }}</p>
+                    <img src="{{ game.home.logo }}" class="team-logo"/>
+                    <h1>{{ game.home.result_score }}</h1>
+                    <p>{{ game.home.result }}</p>
                 </div>
             </div>
         </div>
@@ -253,7 +253,7 @@
             <thead>
                 <tr>
                     <th></th>
-                    {% for inning in game.home.score.scores %}
+                    {% for inning in game.home.scores %}
                         <th>{{ forloop.counter }}</th>
                     {% endfor %}
                     <th>R</th>
@@ -264,24 +264,24 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><img src="{{ game.away.summary.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/></td>
-                    {% for score in game.away.score.scores %}
+                    <td><img src="{{ game.away.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/></td>
+                    {% for score in game.away.scores %}
                     <td>{{ score }}</td>
                     {% endfor %}
-                    <td>{{ game.away.score.stats.R }}</td>
-                    <td>{{ game.away.score.stats.H }}</td>
-                    <td>{{ game.away.score.stats.E }}</td>
-                    <td>{{ game.away.score.stats.B }}</td>
+                    <td>{{ game.away.stats.R }}</td>
+                    <td>{{ game.away.stats.H }}</td>
+                    <td>{{ game.away.stats.E }}</td>
+                    <td>{{ game.away.stats.B }}</td>
                 </tr>
                 <tr>
-                    <td><img src="{{ game.home.summary.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/></td>
-                    {% for score in game.home.score.scores %}
+                    <td><img src="{{ game.home.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/></td>
+                    {% for score in game.home.scores %}
                     <td>{{ score }}</td>
                     {% endfor %}
-                    <td>{{ game.home.score.stats.R }}</td>
-                    <td>{{ game.home.score.stats.H }}</td>
-                    <td>{{ game.home.score.stats.E }}</td>
-                    <td>{{ game.home.score.stats.B }}</td>
+                    <td>{{ game.home.stats.R }}</td>
+                    <td>{{ game.home.stats.H }}</td>
+                    <td>{{ game.home.stats.E }}</td>
+                    <td>{{ game.home.stats.B }}</td>
                 </tr>
             </tbody>
         </table>
@@ -293,16 +293,16 @@
 
         <div class="data-buttons">
             <button id="away-data-button" onclick="awayButtonClick()">
-                <img src="{{ game.away.summary.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/>
+                <img src="{{ game.away.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/>
                 <p>
-                    {{ game.away.summary.name }}
+                    {{ game.away.name }}
                 </p>
             </button>
             <button id="home-data-button" onclick="homeButtonClick()">
                 <p>
-                    {{ game.home.summary.name }}
+                    {{ game.home.name }}
                 </p>
-                <img src="{{ game.home.summary.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/>
+                <img src="{{ game.home.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/>
             </button>
         </div>
 
@@ -321,7 +321,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for hitter in game.away.hitter %}
+                    {% for hitter in game.away.hitters %}
                     <tr>
                         <td>{{ hitter.number }}</td>
                         <td>{{ hitter.position }}</td>
@@ -350,7 +350,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for pitcher in game.away.pitcher %}
+                    {% for pitcher in game.away.pitchers %}
                     <tr>
                         <td>{{ pitcher.name }}</td>
                         <td>{{ pitcher.IP }}</td>
@@ -382,7 +382,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for hitter in game.home.hitter %}
+                    {% for hitter in game.home.hitters %}
                     <tr>
                         <td>{{ hitter.number }}</td>
                         <td>{{ hitter.position }}</td>
@@ -412,7 +412,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for pitcher in game.home.pitcher %}
+                    {% for pitcher in game.home.pitchers %}
                     <tr>
                         <td>{{ pitcher.name }}</td>
                         <td>{{ pitcher.IP }}</td>
