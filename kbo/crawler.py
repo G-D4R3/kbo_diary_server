@@ -4,6 +4,23 @@ import json
 import pandas as pd
 import requests
 
+from kbo.models import Team
+from records.serializers import TeamSerializer
+
+
+class GameListRequestError(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
+class KBOService:
+
+    def retrieve_by_name(self, team_name):
+        team = Team.objects.get(name=team_name)
+        serializer = TeamSerializer(team)
+        return serializer.data
+
 
 class KBODataCrawler:
     AWAY_IDX = 0
@@ -37,7 +54,8 @@ class KBODataCrawler:
         raw_data = requests.post(cls.BOX_SCORE_URL, post_data).json()
         return raw_data
 
-    def get_game_list(self, date: str):
+    @classmethod
+    def get_game_list_raw_data(cls, date: str):
         leId = 1
         srId = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -47,28 +65,48 @@ class KBODataCrawler:
             srId=srId
         )
 
-        res = requests.post(
-            url=self.GAME_LIST_URL,
+        raw_data = requests.post(
+            url=cls.GAME_LIST_URL,
             data=data
-        )
+        ).json()
 
-        game_list = res.json().get('game')
-        columns = [
-            'G_ID',  # game id
-            'G_TM',  # game start time
-            'S_NM',  # stadium name
-            'AWAY_NM',  # away team name
-            'HOME_NM',  # home team name
-            'T_PIT_P_NM',  # away team starting pitcher
-            'B_PIT_P_NM',  # home team starting pitcher
-            'CANCEL_SC_NM',  # 경기 취소 사유
-            'GAME_SC_NM'  # 시즌 이름
-        ]
-        df_game = pd.DataFrame(game_list, columns=columns)
-        for column in columns:
-            df_game[column] = df_game[column].str.strip()
-        data = df_game.to_dict(orient="records")
+        if raw_data.get('msg') != '성공':
+            raise GameListRequestError('게임을 불러오는데에 실패했습니다.')
 
+        return raw_data.get('game')
+
+    def get_game_list(self, date: str):
+        raw_data = self.get_game_list_raw_data(date)
+        kbo_service = KBOService()
+        data = []
+        for game_data in raw_data:
+            away_team_data = kbo_service.retrieve_by_name(game_data['AWAY_NM'])
+            home_team_data = kbo_service.retrieve_by_name(game_data['HOME_NM'])
+
+            data.append(dict(
+                common=dict(
+                    date=date,
+                    g_id=game_data['G_ID'],
+                    g_tm=game_data['G_TM'],
+                    s_nm=game_data['S_NM'],
+                    cancel_sc_nm=game_data['CANCEL_SC_NM'],
+                    game_sc_nm=game_data['GAME_SC_NM'],
+                ),
+                away=dict(
+                    name=game_data['AWAY_NM'],
+                    starting_pitcher=game_data['T_PIT_P_NM'],
+                    result_score=game_data['T_SCORE_CN'],
+                    result=game_result(game_data['T_SCORE_CN'], game_data['B_SCORE_CN']),
+                    logo=away_team_data.get('logo')
+                ),
+                home=dict(
+                    name=game_data['HOME_NM'],
+                    starting_pitcher=game_data['B_PIT_P_NM'],
+                    result_score=game_data['B_SCORE_CN'],
+                    result=game_result(game_data['B_SCORE_CN'], game_data['T_SCORE_CN']),
+                    logo=home_team_data.get('logo')
+                )
+            ))
         return data
 
     def get_game_data(self, s_id: str, g_id: str):
@@ -95,18 +133,26 @@ class KBODataCrawler:
             )
         )
 
-
     def make_game_summary_data(self, raw_data):
+        home_name = raw_data['HOME_NM']
+        away_name = raw_data['AWAY_NM']
+        home = Team.objects.get(name=home_name)
+        away = Team.objects.get(name=away_name)
+
         res = dict(
             home=dict(
                 full_name=raw_data['FULL_HOME_NM'],
                 name=raw_data['HOME_NM'],
-                score=raw_data['T_SCORE_CN']
+                score=raw_data['B_SCORE_CN'],
+                logo=home.logo.url,
+                initial_logo=home.initial_logo.url
             ),
             away=dict(
                 full_name=raw_data['FULL_AWAY_NM'],
                 name=raw_data['AWAY_NM'],
-                score=raw_data['T_SCORE_CN']
+                score=raw_data['T_SCORE_CN'],
+                logo=away.logo.url,
+                initial_logo=away.initial_logo.url
             )
         )
         return res
@@ -211,3 +257,7 @@ class KBODataCrawler:
             home=home_pitcher_players
         )
         return pitcher_data
+
+
+def game_result(score_a, score_b):
+    return '승' if score_a > score_b else '패' if score_a < score_b else '무'

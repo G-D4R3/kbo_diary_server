@@ -10,9 +10,18 @@ class TeamSelectSerializer(serializers.Serializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    logo = serializers.SerializerMethodField()
+    initial_logo = serializers.SerializerMethodField()
+
     class Meta:
         model = Team
-        fields = ('full_name', 'name',)
+        fields = ('full_name', 'name', 'logo', 'initial_logo',)
+
+    def get_logo(self, obj):
+        return obj.logo.url
+
+    def get_initial_logo(self, obj):
+        return obj.initial_logo.url
 
 
 class RecordRetrieveSerializer(serializers.ModelSerializer):

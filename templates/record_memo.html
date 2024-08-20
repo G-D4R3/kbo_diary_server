@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBO Diary</title>
     <style>
         body {
@@ -25,10 +26,16 @@
             margin-bottom: 20px;
         }
 
-        .button-container {
+        header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
         }
 
         .button-container button {
@@ -41,6 +48,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
+            text-align: center;
         }
 
         .button-container button:hover {
@@ -77,10 +85,33 @@
 
             textarea {
                 font-size: 14px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .button-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .button-container button {
+                width: 100%;
+                height: 45px;
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            p {
+                font-size: 16px;
             }
         }
     </style>
-
     <script>
         function memo() {
             const record_id = '{{ id }}';
@@ -88,7 +119,7 @@
 
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'http://localhost:8000/api/records/memo/?id=' + record_id;
+            form.action = window.location.origin + '/api/records/memo/?id=' + record_id;
 
             const memoInput = document.createElement('input');
             memoInput.type = 'hidden';
@@ -104,10 +135,12 @@
     </script>
 </head>
 <body>
-    <div class="button-container">
-        <button class="back-button" onclick="window.history.back();">Back</button>
-        <button id="submit-button" onclick="memo();">완료</button>
-    </div>
+    <header>
+        <div class="button-container">
+            <button class="back-button" onclick="window.history.back();">Back</button>
+            <button id="submit-button" onclick="memo();">완료</button>
+        </div>
+    </header>
     <p>{{ date }}</p>
     <textarea id="text-input">{{ memo }}</textarea>
 </body>

@@ -7,29 +7,81 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f4f7f9;
             color: #333;
         }
 
+        header {
+            color: #424242;
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            box-sizing: border-box;
+            background-color: #ffffff;
+        }
+
+        #back-button {
+            color: #1f6db4;
+            border: none;
+            padding: 5px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            background: none;
+            text-align: center;
+            height: fit-content;
+        }
+
+        .header-title {
+            font-size: 1em;
+            color: #424242;
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 20px;
+        }
+
+        .team-logo {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .team-initial-logo {
+            height: 20px;
+            vertical-align: middle;
+        }
+
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 10px;
+            font-size: 16px;
             color: #007bff;
         }
 
         h2 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
             color: #333;
         }
 
         h3 {
             text-align: center;
             margin-top: 10px;
-            font-size: 18px;
+            font-size: 12px;
             color: #007bff;
         }
 
@@ -38,7 +90,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         table, th, td {
@@ -46,41 +98,20 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 6px;
             text-align: center;
-            font-size: 16px;
+            font-size: 12px;
         }
 
         th {
             background-color: #f8f9fa;
-        }
-
-        button {
-            width: 120px;
-            height: 40px;
-            margin: 10px;
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #away-data-button, #home-data-button {
-            margin: 20px;
+            font-weight: 400;
         }
 
         textarea {
-            width: calc(100% - 40px);
-            margin: 20px;
-            padding: 15px;
-            font-size: 16px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 14px;
             border-radius: 5px;
             border: 1px solid #dee2e6;
             resize: none;
@@ -88,33 +119,75 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .data-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* 버튼 사이의 간격을 조절합니다 */
+            margin-top: 20px;
+        }
+
+        .data-buttons button {
+            border: none;
+            border-radius: 5px;
+            color: #424242;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #eaeaea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* 텍스트 줄 바꿈을 방지합니다 */
+        }
+
+        .data-buttons button img {
+            height: 24px;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        .data-buttons button p {
+            margin: 0;
+        }
+
+        .data-buttons button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .data-buttons button.active {
+            background-color: #0056b3;
+            color: white;
+        }
+
         @media (max-width: 768px) {
             table, th, td {
-                font-size: 14px;
+                font-size: 10px;
+                padding: 4px;
             }
 
             h1, h2 {
-                font-size: 20px;
+                font-size: 14px;
             }
 
             button {
                 width: 100px;
-                height: 35px;
-                font-size: 14px;
+                height: 30px;
+                font-size: 12px;
             }
 
             textarea {
-                font-size: 14px;
+                font-size: 12px;
             }
         }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 초기 상태 설정
             document.getElementById('away-data').style.display = 'block';
             document.getElementById('home-data').style.display = 'none';
-            document.getElementById('away-data-button').style.background = '#007bff';
-            document.getElementById('home-data-button').style.background = '#cccccc';
+            document.getElementById('away-data-button').classList.add('active');
 
             const teamRes = '{{ record.result }}';
             const teamResultElement = document.getElementById('team_result');
@@ -131,15 +204,15 @@
         function awayButtonClick() {
             document.getElementById('away-data').style.display = 'block';
             document.getElementById('home-data').style.display = 'none';
-            document.getElementById('away-data-button').style.background = '#007bff';
-            document.getElementById('home-data-button').style.background = '#cccccc';
+            document.getElementById('away-data-button').classList.add('active');
+            document.getElementById('home-data-button').classList.remove('active');
         }
 
         function homeButtonClick() {
             document.getElementById('home-data').style.display = 'block';
             document.getElementById('away-data').style.display = 'none';
-            document.getElementById('home-data-button').style.background = '#007bff';
-            document.getElementById('away-data-button').style.background = '#cccccc';
+            document.getElementById('home-data-button').classList.add('active');
+            document.getElementById('away-data-button').classList.remove('active');
         }
 
         function recordMemo() {
@@ -154,182 +227,207 @@
     </script>
 </head>
 <body>
-    <div>
-        <button id="back-button" onclick="goBack();">Back</button>
-    </div>
-    <h1>{{ game.away.summary.full_name }} ({{ game.away.score.result }}) vs {{ game.home.summary.full_name }} ({{ game.home.score.result }})</h1>
-    <h3 id="team_result"> </h3>
-
-    <h2>Score and Stats by Inning</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Team</th>
-                {% for inning in game.home.score.scores %}
-                <th>{{ forloop.counter }}회</th>
-                {% endfor %}
-                <th>R</th>
-                <th>H</th>
-                <th>E</th>
-                <th>B</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ game.away.summary.name }}</td>
-                {% for score in game.away.score.scores %}
-                <td>{{ score }}</td>
-                {% endfor %}
-                <td>{{ game.away.score.stats.R }}</td>
-                <td>{{ game.away.score.stats.H }}</td>
-                <td>{{ game.away.score.stats.E }}</td>
-                <td>{{ game.away.score.stats.B }}</td>
-            </tr>
-            <tr>
-                <td>{{ game.home.summary.name }}</td>
-                {% for score in game.home.score.scores %}
-                <td>{{ score }}</td>
-                {% endfor %}
-                <td>{{ game.home.score.stats.R }}</td>
-                <td>{{ game.home.score.stats.H }}</td>
-                <td>{{ game.home.score.stats.E }}</td>
-                <td>{{ game.home.score.stats.B }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div>
-        <h2>Note</h2>
-        <textarea id="text-box" readonly onclick="recordMemo()">{{ record.memo }}</textarea>
-    </div>
-
-    <div>
-        <button id="away-data-button" onclick="awayButtonClick()">{{ game.away.summary.name }}</button>
-        <button id="home-data-button" onclick="homeButtonClick()">{{ game.home.summary.name }}</button>
-    </div>
-
-    <div id="away-data">
-        <h2>Hitters</h2>
+<header>
+    <button id="back-button" onclick="goBack();">Back</button>
+    <div class="header-title">{{ record.date }} 경기</div>
+</header>
+    <div class="container">
+        <div>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center;">
+                    <img src="{{ game.away.summary.logo }}" class="team-logo"/>
+                    <h1>{{ game.away.summary.score }}</h1>
+                    <p>{{ game.away.score.result }}</p>
+                </div>
+                <h1 style="margin: 0 10px; color: #424242;">vs</h1>
+                <div style="text-align: center;">
+                    <img src="{{ game.home.summary.logo }}" class="team-logo"/>
+                    <h1>{{ game.home.summary.score }}</h1>
+                    <p>{{ game.home.score.result }}</p>
+                </div>
+            </div>
+        </div>
+        <h3 id="team_result"></h3>
+        <h2>Score</h2>
         <table>
             <thead>
                 <tr>
-                    <th>No.</th>
-                    <th>Position</th>
-                    <th>Name</th>
-                    <th>PA</th>
-                    <th>H</th>
-                    <th>RBI</th>
+                    <th></th>
+                    {% for inning in game.home.score.scores %}
+                        <th>{{ forloop.counter }}</th>
+                    {% endfor %}
                     <th>R</th>
+                    <th>H</th>
+                    <th>E</th>
+                    <th>B</th>
                 </tr>
             </thead>
             <tbody>
-                {% for hitter in game.away.hitter %}
                 <tr>
-                    <td>{{ hitter.number }}</td>
-                    <td>{{ hitter.position }}</td>
-                    <td>{{ hitter.name }}</td>
-                    <td>{{ hitter.PA }}</td>
-                    <td>{{ hitter.H }}</td>
-                    <td>{{ hitter.RBI }}</td>
-                    <td>{{ hitter.R }}</td>
+                    <td><img src="{{ game.away.summary.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/></td>
+                    {% for score in game.away.score.scores %}
+                    <td>{{ score }}</td>
+                    {% endfor %}
+                    <td>{{ game.away.score.stats.R }}</td>
+                    <td>{{ game.away.score.stats.H }}</td>
+                    <td>{{ game.away.score.stats.E }}</td>
+                    <td>{{ game.away.score.stats.B }}</td>
                 </tr>
-                {% endfor %}
+                <tr>
+                    <td><img src="{{ game.home.summary.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/></td>
+                    {% for score in game.home.score.scores %}
+                    <td>{{ score }}</td>
+                    {% endfor %}
+                    <td>{{ game.home.score.stats.R }}</td>
+                    <td>{{ game.home.score.stats.H }}</td>
+                    <td>{{ game.home.score.stats.E }}</td>
+                    <td>{{ game.home.score.stats.B }}</td>
+                </tr>
             </tbody>
         </table>
-        <h2>Pitchers</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>IP</th>
-                    <th>NP</th>
-                    <th>H</th>
-                    <th>HR</th>
-                    <th>BB</th>
-                    <th>SO</th>
-                    <th>R</th>
-                    <th>ER</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pitcher in game.away.pitcher %}
-                <tr>
-                    <td>{{ pitcher.name }}</td>
-                    <td>{{ pitcher.IP }}</td>
-                    <td>{{ pitcher.NP }}</td>
-                    <td>{{ pitcher.H }}</td>
-                    <td>{{ pitcher.HR }}</td>
-                    <td>{{ pitcher.BB }}</td>
-                    <td>{{ pitcher.SO }}</td>
-                    <td>{{ pitcher.R }}</td>
-                    <td>{{ pitcher.ER }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <div>
+            <h2>Note</h2>
+            <textarea id="text-box" readonly onclick="recordMemo()">{{ record.memo }}</textarea>
+        </div>
+
+        <div class="data-buttons">
+            <button id="away-data-button" onclick="awayButtonClick()">
+                <img src="{{ game.away.summary.initial_logo }}" alt="Away Team Logo" class="team-initial-logo"/>
+                <p>
+                    {{ game.away.summary.name }}
+                </p>
+            </button>
+            <button id="home-data-button" onclick="homeButtonClick()">
+                <p>
+                    {{ game.home.summary.name }}
+                </p>
+                <img src="{{ game.home.summary.initial_logo }}" alt="Home Team Logo" class="team-initial-logo"/>
+            </button>
+        </div>
+
+        <div id="away-data">
+            <h2>타자 기록</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>선수명</th>
+                        <th>PA</th>
+                        <th>H</th>
+                        <th>RBI</th>
+                        <th>R</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hitter in game.away.hitter %}
+                    <tr>
+                        <td>{{ hitter.number }}</td>
+                        <td>{{ hitter.position }}</td>
+                        <td>{{ hitter.name }}</td>
+                        <td>{{ hitter.PA }}</td>
+                        <td>{{ hitter.H }}</td>
+                        <td>{{ hitter.RBI }}</td>
+                        <td>{{ hitter.R }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h2>투수 기록</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>IP</th>
+                        <th>NP</th>
+                        <th>H</th>
+                        <th>HR</th>
+                        <th>BB</th>
+                        <th>SO</th>
+                        <th>R</th>
+                        <th>ER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pitcher in game.away.pitcher %}
+                    <tr>
+                        <td>{{ pitcher.name }}</td>
+                        <td>{{ pitcher.IP }}</td>
+                        <td>{{ pitcher.NP }}</td>
+                        <td>{{ pitcher.H }}</td>
+                        <td>{{ pitcher.HR }}</td>
+                        <td>{{ pitcher.BB }}</td>
+                        <td>{{ pitcher.SO }}</td>
+                        <td>{{ pitcher.R }}</td>
+                        <td>{{ pitcher.ER }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="home-data">
+            <h2>타자 기록</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>선수명</th>
+                        <th>PA</th>
+                        <th>H</th>
+                        <th>RBI</th>
+                        <th>R</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hitter in game.home.hitter %}
+                    <tr>
+                        <td>{{ hitter.number }}</td>
+                        <td>{{ hitter.position }}</td>
+                        <td>{{ hitter.name }}</td>
+                        <td>{{ hitter.PA }}</td>
+                        <td>{{ hitter.H }}</td>
+                        <td>{{ hitter.RBI }}</td>
+                        <td>{{ hitter.R }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h2>투수 기록</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>IP</th>
+                        <th>NP</th>
+                        <th>H</th>
+                        <th>HR</th>
+                        <th>BB</th>
+                        <th>SO</th>
+                        <th>R</th>
+                        <th>ER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pitcher in game.home.pitcher %}
+                    <tr>
+                        <td>{{ pitcher.name }}</td>
+                        <td>{{ pitcher.IP }}</td>
+                        <td>{{ pitcher.NP }}</td>
+                        <td>{{ pitcher.H }}</td>
+                        <td>{{ pitcher.HR }}</td>
+                        <td>{{ pitcher.BB }}</td>
+                        <td>{{ pitcher.SO }}</td>
+                        <td>{{ pitcher.R }}</td>
+                        <td>{{ pitcher.ER }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <div id="home-data">
-        <h2>Hitters</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Position</th>
-                    <th>Name</th>
-                    <th>PA</th>
-                    <th>H</th>
-                    <th>RBI</th>
-                    <th>R</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for hitter in game.home.hitter %}
-                <tr>
-                    <td>{{ hitter.number }}</td>
-                    <td>{{ hitter.position }}</td>
-                    <td>{{ hitter.name }}</td>
-                    <td>{{ hitter.PA }}</td>
-                    <td>{{ hitter.H }}</td>
-                    <td>{{ hitter.RBI }}</td>
-                    <td>{{ hitter.R }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>Pitchers</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>IP</th>
-                    <th>NP</th>
-                    <th>H</th>
-                    <th>HR</th>
-                    <th>BB</th>
-                    <th>SO</th>
-                    <th>R</th>
-                    <th>ER</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pitcher in game.home.pitcher %}
-                <tr>
-                    <td>{{ pitcher.name }}</td>
-                    <td>{{ pitcher.IP }}</td>
-                    <td>{{ pitcher.NP }}</td>
-                    <td>{{ pitcher.H }}</td>
-                    <td>{{ pitcher.HR }}</td>
-                    <td>{{ pitcher.BB }}</td>
-                    <td>{{ pitcher.SO }}</td>
-                    <td>{{ pitcher.R }}</td>
-                    <td>{{ pitcher.ER }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
 </body>
 </html>

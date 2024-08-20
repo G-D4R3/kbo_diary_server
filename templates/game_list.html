@@ -1,98 +1,159 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBO Diary</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
+            background-color: #eaeaea;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
-        h1 {
-            text-align: center;
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #2c3e50;
+        header {
+            color: #424242;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            box-sizing: border-box;
+            background-color: #fff;
         }
 
         #back-button {
-            background-color: #3498db;
-            color: white;
+            color: #1f6db4;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             font-size: 1em;
-            border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 20px;
-            transition: background-color 0.3s ease;
+            background: none;
         }
 
-        #back-button:hover {
-            background-color: #2980b9;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px 15px;
+        .header-title {
+            font-size: 1em;
+            color: #424242;
             text-align: center;
         }
 
-        th {
-            background-color: #34495e;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
+        .container {
+            margin-top: 70px; /* Space for fixed header */
+            padding: 15px;
         }
 
-        tr {
-            border-bottom: 1px solid #dddddd;
-        }
-
-        tr:last-child {
-            border-bottom: 2px solid #34495e;
-        }
-
-        tr:hover:not(.disabled) {
-            background-color: #f1f1f1;
-        }
-
-        .disabled {
-            background-color: #bdc3c7;
-            color: #7f8c8d;
-            pointer-events: none;
-            cursor: not-allowed;
-        }
-
-        .clickable {
+        .game-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            overflow: hidden;
+            text-align: center;
+            transition: opacity 0.3s ease;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            height: auto; /* Height adjusted to fit content */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .clickable:hover {
-            background-color: #ecf0f1;
+        .game-card.muted {
+            opacity: 0.5;
+            color: #888;
+        }
+
+        .game-details {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px; /* Space between team info elements */
+            flex-wrap: nowrap; /* Ensure no wrapping on smaller screens */
+        }
+
+        .team-info-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .team-info {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .team-info img {
+            width: 60px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .result-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .team-info p {
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .result.win {
+            color: #3498db;
+        }
+
+        .result.lose {
+            color: #e74c3c;
+        }
+
+        .result.draw {
+            color: #888;
+        }
+
+        .vs {
+            font-size: 1.2em;
+            color: #34495e;
+            margin: 0 10px;
+        }
+
+        @media (min-width: 768px) {
+            .team-info img {
+                width: 80px;
+            }
+        }
+
+        .game-status {
+            font-weight: bold;
+            font-size: 1em;
+            color: #e74c3c;
         }
     </style>
     <script>
-        function goToGameDetails(game) {
-            if (game.CANCEL_SC_NM !== '정상경기') {
+        function goToGameDetails(g_id, cancel_nm) {
+            if (cancel_nm !== '정상경기') {
                 return;
             }
-            // Redirect to the new API endpoint with g_id as a query parameter
-            window.location.href = `/api/records/team_select/?g_id=` + game.G_ID;
+            window.location.href = `/api/records/team_select/?g_id=` + g_id;
         }
 
         function goBack() {
@@ -101,37 +162,45 @@
     </script>
 </head>
 <body>
-<div>
+<header>
     <button id="back-button" onclick="goBack();">Back</button>
-</div>
-<h1>{{ date }} 경기</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Game ID</th>
-        <th>경기 시간</th>
-        <th>경기장</th>
-        <th>원정팀</th>
-        <th>홈팀</th>
-        <th>원정팀 선발 투수</th>
-        <th>홈팀 선발 투수</th>
-        <th>경기 정보</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for game in games %}
-        <tr onclick="goToGameDetails({{ game }})" class="{% if game.CANCEL_SC_NM != '정상경기' %}disabled{% else %}clickable{% endif %}">
-            <td>{{ game.G_ID }}</td>
-            <td>{{ game.G_TM }}</td>
-            <td>{{ game.S_NM }}</td>
-            <td>{{ game.AWAY_NM }}</td>
-            <td>{{ game.HOME_NM }}</td>
-            <td>{{ game.T_PIT_P_NM }}</td>
-            <td>{{ game.B_PIT_P_NM }}</td>
-            <td>{{ game.CANCEL_SC_NM }}</td>
-        </tr>
+    <div class="header-title">{{ results.common.date }} 경기</div>
+</header>
+<div class="container">
+    {% for game in results %}
+        <div class="game-card {% if game.common.cancel_sc_nm != '정상경기' %}muted{% endif %}" onclick="goToGameDetails('{{ game.common.g_id }}', '{{ game.common.cancel_sc_nm }}');">
+            <div class="game-details">
+                <div class="team-info-wrapper">
+                    <div class="team-info">
+                        <img src="{{ game.away.logo }}" alt="Away Team Logo"/>
+                        <p>
+                            <span class="result {% if game.away.result == '승' %}win{% elif game.away.result == '패' %}lose{% else %}draw{% endif %}">
+                                {{ game.away.result }}
+                            </span>
+                            {{ game.away.starting_pitcher }}
+                        </p>
+                    </div>
+                </div>
+                <p class="result-score">{{ game.away.result_score }}</p>
+                <div class="vs">vs</div>
+                <p class="result-score">{{ game.home.result_score }}</p>
+                <div class="team-info-wrapper">
+                    <div class="team-info">
+                        <img src="{{ game.home.logo }}" alt="Home Team Logo"/>
+                        <p>
+                            <span class="result {% if game.home.result == '승' %}win{% elif game.home.result == '패' %}lose{% else %}draw{% endif %}">
+                                {{ game.home.result }}
+                            </span>
+                            {{ game.home.starting_pitcher }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% if game.common.cancel_sc_nm != "정상경기" %}
+                <p class="game-status">{{ game.common.cancel_sc_nm }}</p>
+            {% endif %}
+        </div>
     {% endfor %}
-    </tbody>
-</table>
+</div>
 </body>
 </html>

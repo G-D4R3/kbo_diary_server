@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,58 +10,71 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #eaeaea;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f4f7f9;
         }
+
 
         header {
-            width: 100%;
-            background-color: #ffffff;
-            color: #333;
-            padding: 10px 20px;
+            color: #424242;
+            padding: 15px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #dee2e6;
+            position: fixed;
+            top: 0;
+            width: 100%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            box-sizing: border-box;
         }
 
-        .back-button {
-            width: 40px;
-            height: 40px;
-            background: none;
+        #back-button {
+            color: #1f6db4;
             border: none;
+            padding: 10px 15px;
+            font-size: 1em;
             cursor: pointer;
-            font-size: 24px;
-            color: #007bff;
-            transition: color 0.3s ease;
-            margin-right: 20px;
         }
 
-        .back-button:hover {
-            color: #0056b3;
+        .header-title {
+            font-size: 1em;
+            color: #424242;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 70px; /* Adjusted for fixed header */
+            width: 100%;
+            max-width: 600px; /* Adjusted for smaller screens */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Space between the forms */
         }
 
         .team-select {
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
+            flex-direction: column; /* Stack forms vertically on small screens */
+            gap: 20px;
             width: 100%;
-            max-width: 800px;
         }
 
         .team-select form {
-            width: 100%;
-            height: 150px;
             display: flex;
-            justify-content: center;
+            flex-direction: column; /* Aligns children (button) vertically */
             align-items: center;
             background-color: #ffffff;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             transition: transform 0.3s ease;
+            width: 100%; /* Full width to adapt to small screens */
+            height: auto; /* Automatic height to fit content */
+            justify-content: center; /* Centers content vertically */
         }
 
         .team-select form:hover {
@@ -68,28 +82,64 @@
         }
 
         .team-select button {
-            width: 100%;
-            height: 100%;
-            background-color: #007bff;
-            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            color: black;
             border: none;
             border-radius: 10px;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            width: 100%;
+            height: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .team-select button img {
+            height: 100px; /* Adjusted for mobile screens */
+            width: auto;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .team-select button span {
+            display: block;
+            text-align: center;
         }
 
         .team-select button:hover {
-            background-color: #0056b3;
+            background-color: #3A3746;
+            color: white;
             transform: scale(1.05);
+        }
+
+        /* Media Query for larger screens */
+        @media (min-width: 768px) {
+            .team-select {
+                flex-direction: row; /* Align forms horizontally on larger screens */
+                gap: 20px;
+            }
+
+            .team-select form {
+                width: 300px; /* Fixed width for larger screens */
+                height: 200px; /* Increased height for larger images */
+            }
+
+            .team-select button img {
+                height: 150px; /* Adjusted for larger screens */
+            }
         }
     </style>
     <script>
         function handleSubmit(fullName, gId) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'http://localhost:8000/api/kbo/game_select/';
+            form.action = window.location.origin + '/api/kbo/game_select/';
 
             const fullNameInput = document.createElement('input');
             fullNameInput.type = 'hidden';
@@ -116,16 +166,19 @@
     </script>
 </head>
 <body>
-    <header>
-        <button class="back-button" onclick="goBack();">&larr;</button>
-    </header>
+<header>
+    <button id="back-button" onclick="goBack();">Back</button>
+    <div class="header-title">{{ date }} 경기</div>
+</header>
+<div class="container">
     <div class="team-select">
         <form method="post" action="{% url 'records:team_select' %}">
             {% csrf_token %}
             <input type="hidden" name="team_full_name" value="{{ away.full_name }}">
             <input type="hidden" name="g_id" value="{{ g_id }}">
             <button type="submit">
-                {{ away.full_name }}
+                <span>{{ away.full_name }}</span>
+                <img src="{{ away.logo }}" alt="Away Team Logo"/>
             </button>
         </form>
         <form method="post" action="{% url 'records:team_select' %}">
@@ -133,9 +186,11 @@
             <input type="hidden" name="team_full_name" value="{{ home.full_name }}">
             <input type="hidden" name="g_id" value="{{ g_id }}">
             <button type="submit">
-                {{ home.full_name }}
+                <span>{{ home.full_name }}</span>
+                <img src="{{ home.logo }}" alt="Home Team Logo"/>
             </button>
         </form>
     </div>
+</div>
 </body>
 </html>
