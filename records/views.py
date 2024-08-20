@@ -23,10 +23,12 @@ class TeamSelectAPIView(APIView):
         game_id = request.query_params.get('g_id')
         if game_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        season_id = game_id[0:4]
         service = RecordService()
-        data = service.get_team_choices(season_id, game_id)
-        return render(request, 'team_choices.html', data)
+        data = service.get_team_choices(game_id)
+        context = dict(
+            results=data
+        )
+        return render(request, 'team_choices.html', context)
 
     def post(self, request, *args, **kwargs):
         # user = request.user

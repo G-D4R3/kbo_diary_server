@@ -14,20 +14,32 @@ class RecordService:
     def __init__(self, user: User = None):
         self._user = user
 
-    def get_team_choices(self, s_id: str, g_id: str):
-        post_data = dict(
-            seasonId=s_id,
-            gameId=g_id,
-            leId=1,
-            srId=0
-        )
+    def get_team_choices(self, g_id: str):
         crawler = KBODataCrawler()
-        raw_data = requests.post(crawler.SCORE_BOARD_URL, post_data).json()
-        summary = crawler.make_game_summary_data(raw_data)
+        raw_data = crawler.get_score_board_raw_data(g_id)
 
-        summary['g_id'] = g_id
-        summary['date'] = g_id[0:8]
-        return summary
+        home_name = raw_data['HOME_NM']
+        away_name = raw_data['AWAY_NM']
+        home = Team.objects.get(name=home_name)
+        away = Team.objects.get(name=away_name)
+
+        data = dict(
+            common=dict(
+                g_id=g_id,
+                date=g_id[0:8]
+            ),
+            away=dict(
+                full_name=away.full_name,
+                name=away.name,
+                logo=away.logo.url
+            ),
+            home=dict(
+                full_name=home.full_name,
+                name=away.name,
+                logo=home.logo.url
+            )
+        )
+        return data
 
     def retrieve(self, id):
         record = self._retrieve(id)
