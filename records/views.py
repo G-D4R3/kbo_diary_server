@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from kbo.crawler import KBODataCrawler
 from kbo.models import Team
 from records.models import Record
-from records.serializers import TeamSelectSerializer
+from records.serializers import TeamSelectSerializer, RecordRetrieveSerializer
 from records.service import RecordService
 
 
@@ -78,22 +78,21 @@ class TeamSelectAPIView(APIView):
 
 class RecordRetrieveAPIView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
-        try:
-            date = datetime.datetime.fromisoformat(request.query_params.get('date')).date()
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        date_str = request.query_params.get('date')
+        record_id = request.query_params.get('id')
 
-        try:
-            # todo: user = request.user
+        if date_str:
+            date = datetime.datetime.fromisoformat(request.query_params.get('date')).date()
             record = Record.objects.get(date=date)
-        except Record.DoesNotExist:
+        elif record_id:
+            record = Record.objects.get(id=record_id)
+        else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         game_id = record.g_id
         crawler = KBODataCrawler()
-        service = RecordService()
         game_data = crawler.get_game_data(game_id)
-        record_data = service.retrieve_by_date(date)
+        record_data = RecordRetrieveSerializer(record).data
         data = dict(
             record=record_data,
             game=game_data
