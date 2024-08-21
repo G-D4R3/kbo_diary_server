@@ -46,6 +46,12 @@ class RecordService:
         serializer = RecordRetrieveSerializer(record)
         return serializer.data
 
+    def retrieve_by_date(self, date: datetime.date):
+        # todo: user = self.user
+        record = Record.objects.filter(date=date).first()
+        serializer = RecordRetrieveSerializer(record)
+        return serializer.data
+
     def _retrieve(self, id):
         record = Record.objects.get(id=id)
         return record

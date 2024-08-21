@@ -79,12 +79,13 @@ class TeamSelectAPIView(APIView):
 class RecordRetrieveAPIView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         try:
-            record_id = int(request.query_params.get('id'))
+            date = datetime.datetime.fromisoformat(request.query_params.get('date')).date()
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            record = Record.objects.get(id=record_id)
+            # todo: user = request.user
+            record = Record.objects.get(date=date)
         except Record.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -92,7 +93,7 @@ class RecordRetrieveAPIView(RetrieveAPIView):
         crawler = KBODataCrawler()
         service = RecordService()
         game_data = crawler.get_game_data(game_id)
-        record_data = service.retrieve(record_id)
+        record_data = service.retrieve_by_date(date)
         data = dict(
             record=record_data,
             game=game_data
@@ -154,3 +155,20 @@ class CalendarView(APIView):
         context = dict(results=data)
 
         return render(request=request, template_name='calendar.html', context=context)
+
+
+class RecordExistCheckView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        date_str = request.GET.get('date')
+        date = datetime.datetime.fromisoformat(date_str).date()
+        # user = request.user
+
+        try:
+            if not Record.objects.filter(date=date).exists():
+                raise Record.DoesNotExist
+            # Record.objects.get(user=user, date=date)
+            return Response(dict(results={"is_exist": True}))
+        except Record.DoesNotExist:
+            return Response(dict(results={"is_exist": False}))
+

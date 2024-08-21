@@ -274,7 +274,21 @@
                 // 날짜 클릭 이벤트 추가 (미래 날짜는 제외)
                 dateElement.addEventListener('click', () => {
                     const formattedDate = `${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
-                    window.location.href = `/api/kbo/games/?date=${formattedDate}`;
+                    fetch(`/api/records/record/exists/?date=${formattedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results.is_exist === true) {
+                            window.location.href = `/api/records/record/?date=${formattedDate}`;
+                        } else {
+
+                            window.location.href = `/api/kbo/games/?date=${formattedDate}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Optionally handle the error (e.g., show an error message)
+                        alert('An error occurred while checking the record.');
+                    });
                 });
             }
             const record = records.find(record => record.date === `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);

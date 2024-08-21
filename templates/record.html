@@ -221,8 +221,7 @@
         }
 
         function goBack() {
-            const g_id = '{{ record.g_id }}';
-            window.location.href = `/api/records/team_select/?g_id=` + g_id;
+            history.back();
         }
     </script>
 </head>
