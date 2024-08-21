@@ -1,5 +1,3 @@
-<!-- todo: 달 넘겼을 때 작동-->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,31 +6,48 @@
     <title>KBO Diary</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f2f5;
+            background-color: #f4f6f9;
             margin: 0;
-            color: #343a40;
+            color: #333;
         }
-        .calendar-wrapper {
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 360px;
+        }
+
+        .stats {
+            margin-bottom: 20px;
             text-align: center;
         }
-        h3 {
-            margin-bottom: 20px;
-            font-size: 24px;
+
+        .stats h3 {
+            font-size: 18px;
+            margin: 8px 0;
+        }
+
+        .stats span {
+            font-weight: bold;
             color: #007bff;
         }
+
         .calendar {
-            width: 350px;
-            border: none;
+            width: 100%;
+            border: 1px solid #ced4da;
             background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            margin-right: 10px;
         }
+
         .calendar-header {
             background-color: #007bff;
             color: #ffffff;
@@ -41,66 +56,143 @@
             font-size: 22px;
             font-weight: bold;
             position: relative;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
         }
+
         .calendar-header button {
             background: none;
             border: none;
             color: #ffffff;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
         }
+
         .prev-month {
-            left: 20px;
+            left: 15px;
         }
+
         .next-month {
-            right: 20px;
+            right: 15px;
         }
+
         .calendar-body {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            padding: 10px 15px 20px 15px;
+            padding: 10px;
         }
+
         .calendar-body div {
             text-align: center;
             padding: 10px 0;
-            font-size: 16px;
+            margin: 5px 0;
             border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
         }
+
         .calendar-body .day {
-            color: #424242;
+            background-color: #e9ecef;
             font-weight: bold;
             cursor: default;
-            padding: 5px 0;
         }
+
         .calendar-body .sunday {
             color: #dc3545;
         }
+
         .calendar-body .today {
-            background-color: #007bff;
+            width: 80%;
+            aspect-ratio: 1 / 1;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: center;
+            align-content: center;
+            background-color: #969696;
             color: #ffffff;
             border-radius: 50%;
             font-weight: bold;
+            margin: 10% auto;
         }
+
         .calendar-body .muted {
             color: #ced4da;
             pointer-events: none;
         }
-        .calendar-body div:hover:not(.muted):not(.day):not(.today) {
+
+        .calendar-body .empty-cell {
+            pointer-events: none;
+        }
+
+        .calendar-body div:hover:not(.muted):not(.empty-cell):not(.day) {
             background-color: #007bff;
             color: #ffffff;
             cursor: pointer;
         }
+
+        .result {
+            font-weight: bold;
+            padding: 4px 6px;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .result.win {
+            margin: 0 auto;
+            width: 80%;
+            aspect-ratio: 1 / 1;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: center;
+            align-content: center;
+            background-color: #3f9aff; /* 파란색 */
+            border-radius: 50%;
+            color: white;
+        }
+
+        .result.draw {
+            margin: 0 auto;
+            width: 80%;
+            aspect-ratio: 1 / 1;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: center;
+            align-content: center;
+            background-color: #6c757d; /* 회색 */
+            border-radius: 50%;
+            color: white;
+        }
+
+        .result.lose {
+            margin: 0 auto;
+            width: 80%;
+            aspect-ratio: 1 / 1;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: center;
+            align-content: center;
+            background-color: #ff6776; /* 빨간색 */
+            border-radius: 50%;
+            color: white;
+        }
     </style>
 </head>
 <body>
-<div class="calendar-wrapper">
-    <h3>이번 시즌 직관 승률 : {{ season_winning_rate }}%</h3>
-    <h3>이번달 직관 승률 : {{ monthly_winning_rate }}%</h3>
+<div class="container">
+    <div class="stats">
+        {% if results.monthly_winning_rate == None %}
+            <h3><span>아직 직관 기록이 없어요</span></h3>
+        {% else %}
+            <h3>
+                <span id="season-rate">이번 시즌 직관 승률 : {{ results.season_winning_rate }}%</span>
+            </h3>
+            <h3>
+                <span id="monthly-rate">이번달 직관 승률 : {{ results.monthly_winning_rate }}%</span>
+            </h3>
+        {% endif %}
+    </div>
     <div class="calendar">
         <div class="calendar-header" id="calendar-header">
             <button class="prev-month" onclick="changeMonth(-1)">&#8249;</button>
@@ -114,11 +206,18 @@
 </div>
 
 <script>
-    let currentDate = new Date();
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const dateStr = params.get('date');
+    const [yearStr, monthStr] = dateStr.split('-');
+    const year = parseInt(yearStr, 10);
+    const month = parseInt(monthStr, 10);
+
 
     function generateCalendar(year, month) {
         const header = document.getElementById('month-year');
         const body = document.getElementById('calendar-body');
+        const records = {{ results.records|safe }};
         body.innerHTML = ''; // 기존 내용 제거
 
         const today = new Date();
@@ -145,6 +244,7 @@
         // 첫 주 공백 채우기
         for (let i = 0; i < firstDayIndex; i++) {
             const emptyElement = document.createElement('div');
+            emptyElement.classList.add('empty-cell');
             body.appendChild(emptyElement);
         }
 
@@ -177,18 +277,49 @@
                     window.location.href = `/api/kbo/games/?date=${formattedDate}`;
                 });
             }
+            const record = records.find(record => record.date === `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+            if (record) {
+                const resultElement = document.createElement('div');
+                resultElement.textContent = record.result; // 결과 표시
+                resultElement.classList.add('result');
 
+                switch (record.result) {
+                    case 'W':
+                        resultElement.classList.add('win');
+                        resultElement.textContent = '승'; // '승'으로 변경
+                        break;
+                    case 'D':
+                        resultElement.classList.add('draw');
+                        resultElement.textContent = '무'; // '무'로 변경
+                        break;
+                    case 'L':
+                        resultElement.classList.add('lose');
+                        resultElement.textContent = '패'; // '패'로 변경
+                        break;
+                    default:
+                        break;
+                }
+                dateElement.appendChild(resultElement);
+            }
             body.appendChild(dateElement);
         }
     }
 
     function changeMonth(offset) {
-        currentDate.setMonth(currentDate.getMonth() + offset);
-        generateCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+        const newDate = new Date(year, month + offset - 1);
+        const today = new Date();
+
+        if (newDate > today) {
+            return;
+        }
+
+        const newYear = newDate.getFullYear();
+        const newMonth = newDate.getMonth() + 1;
+        window.location.href = `/api/records/calendar/?date=${newYear}-${String(newMonth).padStart(2, '0')}`;
     }
 
     // 초기 캘린더 생성
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+    generateCalendar(year, month);
 </script>
 
 </body>

@@ -2,6 +2,7 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
@@ -126,20 +127,30 @@ class CalendarView(APIView):
         user = request.user
 
         date_str = request.GET.get('date')
-        if date_str is None:
-            date = datetime.date.today()
-        else:
-            date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-        month_first_day = datetime.date(date.year, date.month, 1)
-        year_first_day = datetime.date(date.year, 1, 1)
+        cur_year = int(date_str.split('-')[0])
+        cur_month = int(date_str.split('-')[1])
+
+        month_first_day = datetime.date(cur_year, cur_month, 1)
+        year_first_day = datetime.date(cur_year, 1, 1)
         last_day = month_first_day + relativedelta(months=1) - datetime.timedelta(days=1)
 
         service = RecordService(user=user)
-        monthly_winning_rate = service.winning_rate(start=month_first_day, end=last_day)
-        season_winning_rate = service.winning_rate(start=year_first_day, end=last_day)
+        try:
+            monthly_winning_rate = service.winning_rate(start=month_first_day, end=last_day)
+        except ZeroDivisionError:
+            monthly_winning_rate = None
+        try:
+            season_winning_rate = service.winning_rate(start=year_first_day, end=last_day)
+        except ZeroDivisionError:
+            season_winning_rate = None
+
+        records = service.record_summaries(start=month_first_day, end=last_day)
+
         data = dict(
             season_winning_rate=season_winning_rate,
-            monthly_winning_rate=monthly_winning_rate
+            monthly_winning_rate=monthly_winning_rate,
+            records=records
         )
+        context = dict(results=data)
 
-        return render(request, 'calendar.html', context=data)
+        return render(request=request, template_name='calendar.html', context=context)

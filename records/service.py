@@ -6,7 +6,7 @@ from django.db.models import Q
 from kbo.crawler import KBODataCrawler
 from kbo.models import Team
 from records.models import Record
-from records.serializers import RecordRetrieveSerializer
+from records.serializers import RecordRetrieveSerializer, RecordSummarySerializer
 
 
 class RecordService:
@@ -69,6 +69,18 @@ class RecordService:
         winning_rate = int((won_game_count / game_count) * 100)
 
         return winning_rate
+
+
+    def record_summaries(self, start: datetime.date, end: datetime.date):
+        # user = self.user
+        records = Record.objects.filter(  # todo: user filter
+            date__gte=start, date__lte=end
+        )
+        serializer = RecordSummarySerializer(records, many=True)
+
+        return serializer.data
+
+
 
     @property
     def user(self):

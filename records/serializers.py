@@ -30,3 +30,9 @@ class RecordRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = ('id', 'g_id', 'date', 'result', 'memo', 'team',)
+
+
+class RecordSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Record
+        fields = ('id', 'date', 'g_id', 'result',)
