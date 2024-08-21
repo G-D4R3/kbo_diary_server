@@ -21,14 +21,16 @@ drf-yasg==1.21.7
 idna==3.7
 inflection==0.5.1
 jmespath==1.0.1
+mysqlclient==2.2.4
 numpy==2.0.1
 oauthlib==3.2.2
 packaging==24.1
 pandas==2.2.2
 pillow==10.3.0
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pycparser==2.22
 PyJWT==2.8.0
+PyMySQL==1.1.1
 python-dateutil==2.9.0.post0
 python3-openid==3.2.0
 pytz==2024.1

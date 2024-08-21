@@ -8,7 +8,10 @@ RUN    apt-get -y update
 RUN    apt-get -y install vim
 RUN    apt-get -y install python3.11-dev python3.11-venv python3-pip
 RUN    update-alternatives --install /usr/bin/python3 python /usr/bin/python3.11 1
-RUN    apt-get -y install postgresql postgresql-contrib libpq-dev
+
+RUN apt-get update \
+    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 
 RUN useradd -b /home -m -s /bin/bash django
