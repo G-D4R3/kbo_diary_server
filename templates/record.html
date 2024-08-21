@@ -182,6 +182,32 @@
                 font-size: 12px;
             }
         }
+
+        .delete-record {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        #delete-button {
+            background: none;
+            border: none;
+            color: #ff4c4c;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        #delete-button:hover {
+            color: #d43f3f;
+            text-decoration: underline;
+        }
+
+        #delete-button:active {
+            color: #b33232;
+        }
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -223,6 +249,33 @@
         function goBack() {
             history.back();
         }
+
+        function deleteRecord() {
+            const confirmDelete = confirm('정말로 이 기록을 삭제하시겠습니까?');
+            if (confirmDelete) {
+                const record_id = '{{ record.id }}';
+
+                // Create a form element
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/api/records/record/delete/';
+
+                // Create a hidden input field with the record ID
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'id';
+                input.value = record_id;
+
+                // Append the input to the form and the form to the body
+                form.appendChild(input);
+                document.body.appendChild(form);
+
+                // Submit the form
+                form.submit();
+            }
+        }
+
+
     </script>
 </head>
 <body>
@@ -426,6 +479,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="delete-record">
+            <button id="delete-button" onclick="deleteRecord();">기록 삭제</button>
         </div>
     </div>
 </body>

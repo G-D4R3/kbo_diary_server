@@ -172,3 +172,13 @@ class RecordExistCheckView(APIView):
         except Record.DoesNotExist:
             return Response(dict(results={"is_exist": False}))
 
+
+class RecordDeleteView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        record_id = request.data.get('id')
+
+        record = Record.objects.get(id=record_id)
+        record.delete()
+
+        return redirect(to='/')
