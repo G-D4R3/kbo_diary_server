@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,10 +113,12 @@
             }
         }
     </style>
+    <script src="{% static 'cookie.js' %}"></script>
     <script>
         function memo() {
             const record_id = '{{ id }}';
             const textElement = document.getElementById('text-input');
+            const csrfToken = getCookie('csrftoken'); // Retrieve the CSRF token from cookies
 
             const form = document.createElement('form');
             form.method = 'POST';
@@ -126,7 +129,13 @@
             memoInput.name = 'memo';
             memoInput.value = textElement.value;
 
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken; // Set the CSRF token value
+
             form.appendChild(memoInput);
+            form.appendChild(csrfInput); // Add CSRF token to the form
             document.body.appendChild(form);
             form.submit();
 
@@ -135,6 +144,7 @@
     </script>
 </head>
 <body>
+    {% csrf_token %}
     <header>
         <div class="button-container">
             <button class="back-button" onclick="window.history.back();">Back</button>

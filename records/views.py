@@ -32,8 +32,7 @@ class TeamSelectAPIView(APIView):
         return render(request, 'team_choices.html', context)
 
     def post(self, request, *args, **kwargs):
-        # user = request.user
-        user = User.objects.get(email='gdare1999@gmail.com')
+        user = request.user
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -78,14 +77,15 @@ class TeamSelectAPIView(APIView):
 
 class RecordRetrieveAPIView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
+        user = request.user
         date_str = request.query_params.get('date')
         record_id = request.query_params.get('id')
 
         if date_str:
             date = datetime.datetime.fromisoformat(request.query_params.get('date')).date()
-            record = Record.objects.get(date=date)
+            record = Record.objects.get(date=date, user=user)
         elif record_id:
-            record = Record.objects.get(id=record_id)
+            record = Record.objects.get(id=record_id, user=user)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -105,7 +105,7 @@ class RecordMemoAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         record_id = int(request.query_params.get('id'))
-        service = RecordService()
+        service = RecordService(user=request.user)
         data = service.retrieve(record_id)
 
         return render(request, 'record_memo.html', context=data)
@@ -114,7 +114,7 @@ class RecordMemoAPIView(APIView):
         record_id = int(request.query_params.get('id'))
         memo = request.data.get('memo')
 
-        service = RecordService()
+        service = RecordService(user=request.user)
         service.memo(record_id, memo)
 
         redirect_url = f'/api/records/record/?id={record_id}'
@@ -161,12 +161,11 @@ class RecordExistCheckView(APIView):
     def get(self, request, *args, **kwargs):
         date_str = request.GET.get('date')
         date = datetime.datetime.fromisoformat(date_str).date()
-        # user = request.user
+        user = request.user
 
         try:
-            if not Record.objects.filter(date=date).exists():
+            if not Record.objects.filter(date=date, user=user).exists():
                 raise Record.DoesNotExist
-            # Record.objects.get(user=user, date=date)
             return Response(dict(results={"is_exist": True}))
         except Record.DoesNotExist:
             return Response(dict(results={"is_exist": False}))
@@ -175,9 +174,10 @@ class RecordExistCheckView(APIView):
 class RecordDeleteView(APIView):
 
     def post(self, request, *args, **kwargs):
+        user = request.user
         record_id = request.data.get('id')
 
-        record = Record.objects.get(id=record_id)
+        record = Record.objects.get(id=record_id, user=user)
         record.delete()
 
         return redirect(to='/')

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,6 +210,7 @@
         }
 
     </style>
+    <script src="{% static 'cookie.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('away-data').style.display = 'block';
@@ -254,6 +256,7 @@
             const confirmDelete = confirm('정말로 이 기록을 삭제하시겠습니까?');
             if (confirmDelete) {
                 const record_id = '{{ record.id }}';
+                const csrfToken = getCookie('csrftoken'); // Retrieve the CSRF token from cookies
 
                 // Create a form element
                 const form = document.createElement('form');
@@ -266,9 +269,16 @@
                 input.name = 'id';
                 input.value = record_id;
 
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken; // Set the CSRF token value
+
+
                 // Append the input to the form and the form to the body
                 form.appendChild(input);
                 document.body.appendChild(form);
+                form.appendChild(csrfInput); // Add CSRF token to the form
 
                 // Submit the form
                 form.submit();

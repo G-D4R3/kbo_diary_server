@@ -47,8 +47,8 @@ class RecordService:
         return serializer.data
 
     def retrieve_by_date(self, date: datetime.date):
-        # todo: user = self.user
-        record = Record.objects.filter(date=date).first()
+        user = self.user
+        record = Record.objects.get(date=date, user=user)
         serializer = RecordRetrieveSerializer(record)
         return serializer.data
 
@@ -65,8 +65,8 @@ class RecordService:
 
     def winning_rate(self, start: datetime.date, end: datetime.date) -> int:
         user = self.user
-        records = Record.objects.filter(  # todo: user filter
-            date__gte=start, date__lte=end
+        records = Record.objects.filter(
+            date__gte=start, date__lte=end, user=user
         ).filter(
             ~Q(result='D')
         )
@@ -78,9 +78,9 @@ class RecordService:
 
 
     def record_summaries(self, start: datetime.date, end: datetime.date):
-        # user = self.user
-        records = Record.objects.filter(  # todo: user filter
-            date__gte=start, date__lte=end
+        user = self.user
+        records = Record.objects.filter(
+            date__gte=start, date__lte=end, user=user
         )
         serializer = RecordSummarySerializer(records, many=True)
 
