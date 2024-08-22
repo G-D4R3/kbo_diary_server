@@ -8,8 +8,7 @@ from records.service import RecordService
 
 
 def index(request: Request):
-    date = request.GET.get('date')
-    if date is None:
-        date = datetime.date.today().strftime('%Y-%m')
-
-    return redirect(f'/api/records/calendar?date={date}')
+    if request.user:
+        date_str = datetime.date.today().strftime('%Y-%m')
+        return redirect(to=f'/api/records/calendar/?date={date_str}')
+    return render(request, 'main.html')

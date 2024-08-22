@@ -1,0 +1,56 @@
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>크보일기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        div {
+            margin: 20px 0;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .kakao {
+            width: 100%;
+            max-width: 300px; /* Restrict the size on larger screens */
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <img src="{% static 'assets/logo.png' %}" alt="Away Team Logo"/>
+</div>
+<div>
+    <button type="button" onclick="location.href = '{% provider_login_url 'kakao' %}'">
+        <img class="kakao" src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" alt="Kakao Login">
+    </button>
+</div>
+</body>
+</html>

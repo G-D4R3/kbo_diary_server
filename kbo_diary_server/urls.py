@@ -23,6 +23,8 @@ from kbo_diary_server import index_view, settings
 urlpatterns = [
     path('', index_view.index),
     path("admin/", admin.site.urls),
+
+    path('accounts/', include('allauth.urls')),
     path('api/kbo/', include('kbo.urls', 'kbo')),
     path('api/records/', include('records.urls', 'records')),
 ]
