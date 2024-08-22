@@ -246,8 +246,8 @@
             window.location.href = `/api/records/memo/?id=` + record_id;
         }
 
-        function goBack() {
-            history.back();
+        function goHome() {
+            window.location.href = `/`;
         }
 
         function deleteRecord() {
@@ -280,7 +280,7 @@
 </head>
 <body>
 <header>
-    <button id="back-button" onclick="goBack();">Back</button>
+    <button id="back-button" onclick="goHome();">Home</button>
     <div class="header-title">{{ record.date }} 경기</div>
 </header>
     <div class="container">
