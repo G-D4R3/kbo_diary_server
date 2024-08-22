@@ -6,14 +6,9 @@ services:
       context: .
     env_file:
       - .env
-    volumes:
-      - .:/var/www/django/codes
   nginx:
     ports:
       - 80:80
     build: ./nginx
     depends_on :
       - uwsgi
-    volumes:
-      - ./nginx/nginx-app.conf:/etc/nginx/nginx.conf
-      - static_volume:/var/www/django/code/staticfiles
