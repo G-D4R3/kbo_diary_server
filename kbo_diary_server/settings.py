@@ -175,3 +175,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
