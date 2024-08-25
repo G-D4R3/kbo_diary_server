@@ -168,10 +168,20 @@ REST_FRAMEWORK = {
     )
 }
 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
 AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 AWS_REGION = os.environ.get('AWS_REGION')
+AWS_S3_REGION_NAME = AWS_REGION
 AWS_S3_HOST = 's3.%s.amazonaws.com' % AWS_REGION
 MEDIA_URL = "https://%s/media/" % AWS_S3_CUSTOM_DOMAIN
+MEDIA_ROOT = "https://%s/media/" % AWS_S3_CUSTOM_DOMAIN
 
 STATIC_URL = "https://%s/static/" % AWS_S3_CUSTOM_DOMAIN
+
+AWS_S3_SECURE_URLS = False
+AWS_QUERYSTRING_AUTH = False
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

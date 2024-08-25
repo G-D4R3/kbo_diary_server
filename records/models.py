@@ -24,3 +24,8 @@ class Record(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['date', 'user'], name='record user and date unique constraint')
         ]
+
+
+class RecordImage(models.Model):
+    record = models.ForeignKey(Record, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='user_images/', null=True)
