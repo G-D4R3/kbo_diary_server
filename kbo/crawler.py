@@ -94,15 +94,15 @@ class KBODataCrawler:
                 away=dict(
                     name=game_data['AWAY_NM'],
                     starting_pitcher=game_data['T_PIT_P_NM'],
-                    result_score=game_data['T_SCORE_CN'],
-                    result=game_result(game_data['T_SCORE_CN'], game_data['B_SCORE_CN']),
+                    result_score=int(game_data['T_SCORE_CN']),
+                    result=game_result(int(game_data['T_SCORE_CN']), int(game_data['B_SCORE_CN'])),
                     logo=away_team_data.get('logo')
                 ),
                 home=dict(
                     name=game_data['HOME_NM'],
                     starting_pitcher=game_data['B_PIT_P_NM'],
-                    result_score=game_data['B_SCORE_CN'],
-                    result=game_result(game_data['B_SCORE_CN'], game_data['T_SCORE_CN']),
+                    result_score=int(game_data['B_SCORE_CN']),
+                    result=game_result(int(game_data['B_SCORE_CN']), int(game_data['T_SCORE_CN'])),
                     logo=home_team_data.get('logo')
                 )
             ))
@@ -119,7 +119,7 @@ class KBODataCrawler:
         away_data = dict(
             name=score_board_raw_data['AWAY_NM'],
             full_name=score_board_raw_data['FULL_AWAY_NM'],
-            result_score=score_board_raw_data['T_SCORE_CN'],
+            result_score=int(score_board_raw_data['T_SCORE_CN']),
             result=score_data['away']['result'],
             scores=score_data['away']['scores'],
             stats=score_data['away']['stats'],
@@ -130,7 +130,7 @@ class KBODataCrawler:
         home_data = dict(
             name=score_board_raw_data['HOME_NM'],
             full_name=score_board_raw_data['FULL_HOME_NM'],
-            result_score=score_board_raw_data['B_SCORE_CN'],
+            result_score=int(score_board_raw_data['B_SCORE_CN']),
             result=score_data['home']['result'],
             scores=score_data['home']['scores'],
             stats=score_data['home']['stats'],
@@ -167,14 +167,14 @@ class KBODataCrawler:
             home=dict(
                 full_name=raw_data['FULL_HOME_NM'],
                 name=raw_data['HOME_NM'],
-                score=raw_data['B_SCORE_CN'],
+                score=int(raw_data['B_SCORE_CN']),
                 logo=home.logo.url,
                 initial_logo=home.initial_logo.url
             ),
             away=dict(
                 full_name=raw_data['FULL_AWAY_NM'],
                 name=raw_data['AWAY_NM'],
-                score=raw_data['T_SCORE_CN'],
+                score=int(raw_data['T_SCORE_CN']),
                 logo=away.logo.url,
                 initial_logo=away.initial_logo.url
             )

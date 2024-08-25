@@ -44,14 +44,14 @@ class TeamSelectAPIView(APIView):
         # team의 승리 정보를 불러옴
         raw_data = KBODataCrawler.get_score_board_raw_data(g_id)
         score = dict()
-        score[raw_data['FULL_AWAY_NM']] = 'W' if raw_data['T_SCORE_CN'] > raw_data['B_SCORE_CN'] else 'L' if raw_data[
-                                                                                                                 'T_SCORE_CN'] < \
-                                                                                                             raw_data[
-                                                                                                                 'B_SCORE_CN'] else 'D'
-        score[raw_data['FULL_HOME_NM']] = 'W' if raw_data['B_SCORE_CN'] > raw_data['T_SCORE_CN'] else 'L' if raw_data[
-                                                                                                                 'B_SCORE_CN'] < \
-                                                                                                             raw_data[
-                                                                                                                 'T_SCORE_CN'] else 'D'
+        score[raw_data['FULL_AWAY_NM']] = 'W' if int(raw_data['T_SCORE_CN']) > int(raw_data['B_SCORE_CN']) else 'L' if int(raw_data[
+                                                                                                                 'T_SCORE_CN']) < \
+                                                                                                             int(raw_data[
+                                                                                                                 'B_SCORE_CN']) else 'D'
+        score[raw_data['FULL_HOME_NM']] = 'W' if int(raw_data['B_SCORE_CN']) > raw_data['T_SCORE_CN'] else 'L' if int(raw_data[
+                                                                                                                 'B_SCORE_CN']) < \
+                                                                                                             int(raw_data[
+                                                                                                                 'T_SCORE_CN']) else 'D'
 
         team = Team.objects.get(full_name=team_full_name)
         try:
