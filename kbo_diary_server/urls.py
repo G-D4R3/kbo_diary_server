@@ -28,6 +28,3 @@ urlpatterns = [
     path('api/kbo/', include('kbo.urls', 'kbo')),
     path('api/records/', include('records.urls', 'records')),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
