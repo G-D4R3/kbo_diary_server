@@ -149,8 +149,12 @@
         }
     </style>
     <script>
-        function goToGameDetails(g_id, cancel_nm) {
+        function goToGameDetails(g_id, cancel_nm, game_state_sc) {
             if (cancel_nm !== '정상경기') {
+                return;
+            }
+            if (game_state_sc !== '3') {
+                // 경기 종료가 아닐 경우
                 return;
             }
             window.location.href = `/api/records/team_select/?g_id=` + g_id;
@@ -168,7 +172,8 @@
 </header>
 <div class="container">
     {% for game in results.games %}
-        <div class="game-card {% if game.common.cancel_sc_nm != '정상경기' %}muted{% endif %}" onclick="goToGameDetails('{{ game.common.g_id }}', '{{ game.common.cancel_sc_nm }}');">
+        {% if game.common.game_state_sc == '3' %}
+        <div class="game-card {% if game.common.cancel_sc_nm != '정상경기' %}muted{% endif %}" onclick="goToGameDetails('{{ game.common.g_id }}', '{{ game.common.cancel_sc_nm }}', '{{ game.common.game_state_sc }}');">
             <div class="game-details">
                 <div class="team-info-wrapper">
                     <div class="team-info">
@@ -200,6 +205,34 @@
                 <p class="game-status">{{ game.common.cancel_sc_nm }}</p>
             {% endif %}
         </div>
+        {% else %}
+            <div class="game-card muted"
+                 onclick="goToGameDetails('{{ game.common.g_id }}', '{{ game.common.cancel_sc_nm }}', '{{ game.common.game_state_sc }}');">
+            <div class="game-details">
+                <div class="team-info-wrapper">
+                    <div class="team-info">
+                        <img src="{{ game.away.logo }}" alt="Away Team Logo"/>
+                        <p>
+                            {{ game.away.starting_pitcher }}
+                        </p>
+                    </div>
+                </div>
+                <div class="vs">
+                    {% if game.common.cancel_sc_nm != "정상경기" %}
+                        <p class="game-status">{{ game.common.cancel_sc_nm }}</p>
+                    {% endif %}
+                </div>
+                <div class="team-info-wrapper">
+                    <div class="team-info">
+                        <img src="{{ game.home.logo }}" alt="Home Team Logo"/>
+                        <p>
+                            {{ game.home.starting_pitcher }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     {% endfor %}
 </div>
 </body>

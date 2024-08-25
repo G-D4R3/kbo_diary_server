@@ -90,6 +90,7 @@ class KBODataCrawler:
                     s_nm=game_data['S_NM'],
                     cancel_sc_nm=game_data['CANCEL_SC_NM'],
                     game_sc_nm=game_data['GAME_SC_NM'],
+                    game_state_sc=game_data['GAME_STATE_SC']
                 ),
                 away=dict(
                     name=game_data['AWAY_NM'],
